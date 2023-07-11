@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user_payment")
+@Table(name = "tbl_user_payment")
 public class UserPayment extends BaseEntity{
     @Column(name = "provider")
     private String provider;

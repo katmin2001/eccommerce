@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -38,6 +40,8 @@ public class AuthenticationService {
                     .address(request.getAddress())
                     .role(request.getRole().equals("ADMIN") ? Role.ADMIN : Role.CUSTOMER)
                     .build();
+            user.setCreated_date(new Date());
+            user.setUpdate_date(new Date());
             userRepository.save(user);
             String jwtToken = jwtService.generateToken(user);
             return ResponseEntity.ok(AuthenticationResponse.builder().message("Register successfully").token(jwtToken).build());

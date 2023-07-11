@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "tbl_cart")
 public class Cart extends BaseEntity{
     @Column(name = "user_id")
     private Long user_id;

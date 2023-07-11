@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "order_item")
+@Table(name = "tbl_order_item")
 public class OrderItem extends BaseEntity{
     @Column(name = "quantity")
     private Integer quantity;
