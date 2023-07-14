@@ -195,4 +195,25 @@ public class ProductServiceImpl implements ProductService {
         logger.info("SUCCESS");
         return ResponseEntity.ok(new Result("SUCCESS","OK", productDTOS));
     }
+
+    @Override
+    public ResponseEntity<Result> getBestSales() {
+        List<Product> products = productRepository.findProductsBySales();
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for(Product product:products){
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setAmount(product.getAmount());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setCreatedDate(product.getCreated_date());
+            productDTO.setUpdateDate(product.getUpdate_date());
+            productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
+            productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
+            productDTOS.add(productDTO);
+        }
+        logger.info("SUCCESS");
+        return ResponseEntity.ok(new Result("SUCCESS","OK", productDTOS));
+    }
 }

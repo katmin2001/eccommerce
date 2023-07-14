@@ -18,4 +18,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "from vti_project.tbl_product p\n" +
             "where p.category_id = :categoryId", nativeQuery = true)
     List<Product> findProductByCategoryId(@Param("categoryId") Long categoryId);
+    @Query(value = "select *\n" +
+            "from vti_project.tbl_product p\n" +
+            "inner join (\n" +
+            "select ordi.product_id\n" +
+            "from vti_project.tbl_order_item ordi\n" +
+            "group by ordi.product_id\n" +
+            "order by sum(ordi.quantity) desc limit 5)\n" +
+            "as e on p.id = e.product_id",nativeQuery = true)
+    List<Product> findProductsBySales();
 }

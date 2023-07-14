@@ -16,5 +16,6 @@ public interface ProductService {
     public ResponseEntity<Result> activeProduct(Long productId);
     public ResponseEntity<Result> searchProduct();
     public ResponseEntity<Result> searchProductByCategory(Long categoryId);
+    public ResponseEntity<Result> getBestSales();
 
 }
