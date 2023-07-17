@@ -14,7 +14,7 @@ public interface ProductService {
     public ResponseEntity<Result> updateProduct(ProductRequestDTO productRequestDTO, Long productId);
     public ResponseEntity<Result> deleteProduct(Long productId);
     public ResponseEntity<Result> activeProduct(Long productId);
-    public ResponseEntity<Result> searchProduct();
+    public ResponseEntity<Result> searchProduct(String keyword);
     public ResponseEntity<Result> searchProductByCategory(Long categoryId);
     public ResponseEntity<Result> getBestSales();
 

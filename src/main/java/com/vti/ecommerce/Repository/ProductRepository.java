@@ -27,4 +27,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "order by sum(ordi.quantity) desc limit 5)\n" +
             "as e on p.id = e.product_id",nativeQuery = true)
     List<Product> findProductsBySales();
+    @Query(value = "SELECT *\n" +
+            "FROM vti_project.tbl_product p\n" +
+            "where p.name like %:keyword% \n" +
+            "or p.description like %:keyword%",nativeQuery = true)
+    List<Product> findProductsByKeyword(@Param("keyword") String keyword);
 }

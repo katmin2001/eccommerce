@@ -5,6 +5,7 @@ import com.vti.ecommerce.Model.DTO.ProductDTO;
 import com.vti.ecommerce.Model.DTO.ProductRequestDTO;
 import com.vti.ecommerce.Model.Result;
 import com.vti.ecommerce.Service.CategoryService;
+import com.vti.ecommerce.Service.OrderService;
 import com.vti.ecommerce.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ public class AdminController {
     private CategoryService categoryService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private OrderService orderService;
     //quản lý category
     @GetMapping("/category/all")
     public ResponseEntity<List<Category>> getAllCategory(){
@@ -38,6 +41,11 @@ public class AdminController {
                                                    @PathVariable("categoryId") Long categoryId){
         return categoryService.updateCategory(category,categoryId);
     }
+    @GetMapping("/category/search")
+    public ResponseEntity<Result> findCategoriesByKeyword(@RequestParam String q){
+        return categoryService.searchCategory(q);
+    }
+    //quan li san pham
     @PostMapping("/category/delete/{categoryId}")
     public ResponseEntity<Result> deleteCategory(@PathVariable("categoryId") Long categoryId){
         return categoryService.deleteCategory(categoryId);
@@ -72,5 +80,17 @@ public class AdminController {
     public ResponseEntity<Result> findProductByCategory(@PathVariable("categoryId") Long categoryId){
         return productService.searchProductByCategory(categoryId);
     }
+    @GetMapping("/product/search")
+    public ResponseEntity<Result> findProductsByKeyword(@RequestParam String q){
+        return productService.searchProduct(q);
+    }
     //quản lý đơn hàng - order
+    @GetMapping("/order/all")
+    public ResponseEntity<Result> getAllOrder(){
+        return orderService.getAllOrder();
+    }
+    @GetMapping("/order/detail/{orderId}")
+    public ResponseEntity<Result> getOrderDetail(@PathVariable("orderId") Long orderId){
+        return orderService.getOrderDetail(orderId);
+    }
 }

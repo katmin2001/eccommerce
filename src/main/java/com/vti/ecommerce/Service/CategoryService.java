@@ -13,5 +13,5 @@ public interface CategoryService {
     public ResponseEntity<Result> updateCategory(Category category, Long categoryId);
     public ResponseEntity<Result> deleteCategory(Long categoryId);
     public ResponseEntity<Result> getCategoryById(Long categoryId);
-//    public Category searchCategory();
+    public ResponseEntity<Result> searchCategory(String keyword);
 }

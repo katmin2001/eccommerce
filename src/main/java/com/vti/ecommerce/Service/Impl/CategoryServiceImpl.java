@@ -81,4 +81,9 @@ public class CategoryServiceImpl implements CategoryService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CATEGORY","NOT_FOUND",null));
         }
     }
+
+    @Override
+    public ResponseEntity<Result> searchCategory(String keyword) {
+        return ResponseEntity.ok(new Result("SUCCESS","OK", categoryRepository.findCategoriesByKeyword(keyword)));
+    }
 }

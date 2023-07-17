@@ -171,8 +171,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<Result> searchProduct() {
-        return null;
+    public ResponseEntity<Result> searchProduct(String keyword) {
+        return ResponseEntity.ok(new Result("SUCCESS","OK", productRepository.findProductsByKeyword(keyword)));
     }
 
     @Override
