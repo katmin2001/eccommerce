@@ -296,11 +296,14 @@ public class UserServiceImpl implements UserService {
             orderItem.setCreated_date(new Date());
             if(product.getAmount() > cartItem.getQuantity()){
                 product.setAmount(product.getAmount() - cartItem.getQuantity());
-            }
-            else{
+            } else if (product.getAmount() == cartItem.getQuantity()) {
+                product.setAmount(0);
+                product.setStatus(false);
+            } else{
                 logger.error("NOT ENOUGH PRODUCT");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH PRODUCT","CONFLICT", null));
             }
+            productRepository.save(product);
             total_price += orderItem.getSub_total();
             orderItems.add(orderItem);
             cartItems.add(cartItem);
