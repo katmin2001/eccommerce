@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResponseEntity<Result> getAllOrder() {
         logger.info("OK");
-       return ResponseEntity.ok(new Result("SUCCESS","OK",orderRepository.findAll()));
+        return ResponseEntity.ok(new Result("SUCCESS","OK",orderRepository.findAll()));
     }
 
     @Override

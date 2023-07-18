@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
         }
     }
-
+//quản lý cart
     @Override
     public ResponseEntity<Result> addToCart(Long productId, String username) {
         Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).orElse(null).getId());

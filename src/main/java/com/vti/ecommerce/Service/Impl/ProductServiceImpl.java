@@ -172,7 +172,22 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<Result> searchProduct(String keyword) {
-        return ResponseEntity.ok(new Result("SUCCESS","OK", productRepository.findProductsByKeyword(keyword)));
+        List<Product> products = productRepository.findProductsByKeyword(keyword);
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for(Product product:products){
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setId(product.getId());
+            productDTO.setName(product.getName());
+            productDTO.setPrice(product.getPrice());
+            productDTO.setAmount(product.getAmount());
+            productDTO.setDescription(product.getDescription());
+            productDTO.setCreatedDate(product.getCreated_date());
+            productDTO.setUpdateDate(product.getUpdate_date());
+            productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
+            productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
+            productDTOS.add(productDTO);
+        }
+        return ResponseEntity.ok(new Result("SUCCESS","OK", productDTOS));
     }
 
     @Override
