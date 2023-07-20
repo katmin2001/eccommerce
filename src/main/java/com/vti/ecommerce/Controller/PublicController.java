@@ -35,4 +35,8 @@ public class PublicController {
     public ResponseEntity<Result> findProductsByCategory(@PathVariable("categoryId") Long categoryId){
         return productService.searchProductByCategory(categoryId);
     }
+    @GetMapping("/product/detail/{productId}")
+    public ResponseEntity<Result> getProductDetail(@PathVariable("productId") Long productId){
+        return productService.getProductById(productId);
+    }
 }
