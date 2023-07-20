@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryService {
-    public List<Category> getAllCategory();
+    public ResponseEntity<Result> getAllCategory();
     public ResponseEntity<Result> addCategory(Category category);
     public ResponseEntity<Result> updateCategory(Category category, Long categoryId);
     public ResponseEntity<Result> deleteCategory(Long categoryId);

@@ -25,8 +25,8 @@ public class AdminController {
     private OrderService orderService;
     //quản lý category
     @GetMapping("/category/all")
-    public ResponseEntity<List<Category>> getAllCategory(){
-        return ResponseEntity.ok(categoryService.getAllCategory());
+    public ResponseEntity<Result> getAllCategory(){
+        return categoryService.getAllCategory();
     }
     @GetMapping("/category/detail/{categoryId}")
     public ResponseEntity<Result> getCategoryById(@PathVariable("categoryId") Long categoryId){

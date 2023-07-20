@@ -20,8 +20,8 @@ public class PublicController {
     @Autowired
     private ProductService productService;
     @GetMapping("/home/category-list")
-    public ResponseEntity<List<Category>> getAllCategory(){
-        return ResponseEntity.ok(categoryService.getAllCategory());
+    public ResponseEntity<Result> getAllCategory(){
+        return categoryService.getAllCategory();
     }
     @GetMapping("/home/best-sales")
     public ResponseEntity<Result> getBestSales(){

@@ -25,14 +25,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
+    public ResponseEntity<Result> getAllCategory() {
+        logger.info("SUCCESS");
+        return ResponseEntity.ok(new Result("SUCCESS","OK", categoryRepository.findAll()));
     }
 
     @Override
     public ResponseEntity<Result> addCategory(Category category) {
         category.setCreated_date(new Date());
-        logger.info("SUCCESS");logger.info("SUCCESS");
+        logger.info("SUCCESS");
         return ResponseEntity.ok(new Result("SUCCESS","OK",categoryRepository.save(category)));
     }
 
