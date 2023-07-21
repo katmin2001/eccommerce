@@ -4,6 +4,7 @@ import com.vti.ecommerce.Model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,9 +24,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/home/**","/login","/register","/contact","/subcribe","/search","/product-list/**","/authenticate","/product/**").permitAll()
-                        .requestMatchers("/user/**").hasAnyRole(Role.CUSTOMER.name(),Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/home/**","/login","/register","/contact","/subcribe","/search","/product-list/**","/authenticate","/product/**").permitAll()
                         .requestMatchers("/admin/**").hasAnyRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
