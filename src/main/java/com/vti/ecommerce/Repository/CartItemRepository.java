@@ -20,4 +20,9 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
             "FROM vti_project.tbl_cart_item cai\n" +
             "where cai.product_id = :productId", nativeQuery = true)
     CartItem findCartItemByProductId(@Param("productId") Long productId);
+    @Query(value = "SELECT * \n" +
+            "FROM vti_project.tbl_cart_item cai\n" +
+            "where cai.product_id = :productId and cai.cart_id = :cartId", nativeQuery = true)
+    CartItem findCartItemByProductIdAndUserId(@Param("productId") Long productId,
+                                              @Param("cartId") Long cartId);
 }

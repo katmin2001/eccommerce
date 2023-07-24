@@ -5,6 +5,7 @@ import com.vti.ecommerce.Model.DTO.CartDTO;
 import com.vti.ecommerce.Model.DTO.OrderDTO;
 import com.vti.ecommerce.Model.DTO.UserDTO;
 import com.vti.ecommerce.Repository.*;
+import com.vti.ecommerce.Service.EmailService;
 import com.vti.ecommerce.Service.UserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final UserPaymentRepository userPaymentRepository;
+    private EmailService emailService;
 
     public UserServiceImpl(UserRepository userRepository, ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserPaymentRepository userPaymentRepository) {
         this.userRepository = userRepository;
@@ -200,29 +202,35 @@ public class UserServiceImpl implements UserService {
 //quản lý cart
     @Override
     public ResponseEntity<Result> addToCart(Long productId, String username) {
-        Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).orElse(null).getId());
-        if(cart == null){
-            cart = new Cart();
-            cart.setUser_id(userRepository.findByUsername(username).orElse(null).getId());
-            cart.setCreated_date(new Date());
-            cartRepository.save(cart);
-        }
+        try{
+            Product product = productRepository.findById(productId).orElseThrow(null);
+            Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).orElse(null).getId());
+            if(cart == null){
+                cart = new Cart();
+                cart.setUser_id(userRepository.findByUsername(username).orElse(null).getId());
+                cart.setCreated_date(new Date());
+                cartRepository.save(cart);
+            }
 //        List<CartItem> cartItems = cartItemRepository.findCartItemsByUser(cart.getId());
 
-        CartItem cartItem = cartItemRepository.findCartItemByProductId(productId);
-        if(cartItem == null){
-            cartItem = new CartItem();
-            cartItem.setCart_id(cart.getId());
-            cartItem.setQuantity(1);
-            cartItem.setProduct_id(productId);
-            cartItem.setCreated_date(new Date());
+            CartItem cartItem = cartItemRepository.findCartItemByProductIdAndUserId(productId, cart.getId());
+            if(cartItem == null){
+                cartItem = new CartItem();
+                cartItem.setCart_id(cart.getId());
+                cartItem.setQuantity(1);
+                cartItem.setProduct_id(productId);
+                cartItem.setCreated_date(new Date());
+            }
+            else {
+                cartItem.setQuantity(cartItem.getQuantity()+1);
+                cartItem.setUpdate_date(new Date());
+            }
+            logger.info("ADD TO CART SUCCESS");
+            return ResponseEntity.ok(new Result("SUCCESS","OK",cartItemRepository.save(cartItem)));
+        }catch (NullPointerException e){
+            logger.error("NOT FOUND PRODUCT");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT","NOT_FOUND", null));
         }
-        else {
-            cartItem.setQuantity(cartItem.getQuantity()+1);
-            cartItem.setUpdate_date(new Date());
-        }
-        logger.info("ADD TO CART SUCCESS");
-        return ResponseEntity.ok(new Result("SUCCESS","OK",cartItemRepository.save(cartItem)));
     }
 
     @Override
@@ -287,23 +295,24 @@ public class UserServiceImpl implements UserService {
         order.setUser_payment_id(cartDTO.getUserPaymentId());
         order.setStatus_shipping("Đã đặt");
         for(Long cartItemId: cartDTO.getCartItemList()){
-            Product product = productRepository.findById(cartItemId).orElse(null);
-            CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(null);
+            CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow();
+            Product product = productRepository.findById(cartItem.getProduct_id()).orElseThrow();
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct_id(cartItem.getProduct_id());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setSub_total(cartItem.getQuantity()* product.getPrice());
+            orderItem.setSub_total(cartItem.getQuantity() * product.getPrice());
             orderItem.setCreated_date(new Date());
             if(product.getAmount() > cartItem.getQuantity()){
                 product.setAmount(product.getAmount() - cartItem.getQuantity());
+                productRepository.save(product);
             } else if (product.getAmount() == cartItem.getQuantity()) {
                 product.setAmount(0);
                 product.setStatus(false);
+                productRepository.save(product);
             } else{
                 logger.error("NOT ENOUGH PRODUCT");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH PRODUCT","CONFLICT", null));
             }
-            productRepository.save(product);
             total_price += orderItem.getSub_total();
             orderItems.add(orderItem);
             cartItems.add(cartItem);
@@ -315,6 +324,7 @@ public class UserServiceImpl implements UserService {
         }
         orderItemRepository.saveAll(orderItems);
         cartItemRepository.deleteAll(cartItems);
+
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setUser(userRepository.findByUsername(username).orElseThrow(null));
         orderDTO.setUserPayment(userPaymentRepository.findById(cartDTO.getUserPaymentId()).orElseThrow(null));
@@ -322,6 +332,11 @@ public class UserServiceImpl implements UserService {
         orderDTO.setCreatedDate(new Date());
         orderDTO.setStatusShipping("Đã đặt");
         orderDTO.setOrderItemList(orderItems);
+
+        //gui mail
+        User user = userRepository.findByUsername(username).orElseThrow(null);
+        emailService.sendMail(order, user);
+
         logger.info("ORDER SUCCESS");
         return ResponseEntity.ok(new Result("ORDER SUCCESS","OK",orderDTO));
     }
