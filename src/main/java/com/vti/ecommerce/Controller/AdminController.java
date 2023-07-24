@@ -45,7 +45,6 @@ public class AdminController {
     public ResponseEntity<Result> findCategoriesByKeyword(@RequestParam String q){
         return categoryService.searchCategory(q);
     }
-    //quan li san pham
     @PostMapping("/category/delete/{categoryId}")
     public ResponseEntity<Result> deleteCategory(@PathVariable("categoryId") Long categoryId){
         return categoryService.deleteCategory(categoryId);
