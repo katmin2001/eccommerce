@@ -24,7 +24,7 @@ public class EmailService {
                     +"\nTrạng thái: "+order.getStatus_shipping()
                     +"\nNgày mua: "+order.getCreated_date();
             helper.setTo(user.getEmail());
-            helper.setSubject("Email confirm order by" + user.getName());
+            helper.setSubject("Email confirm order by " + user.getName());
             helper.setText(contextMail);
             javaMailSender.send(message);
         }catch (MessagingException e){
