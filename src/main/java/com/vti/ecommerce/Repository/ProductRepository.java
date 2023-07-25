@@ -2,6 +2,8 @@ package com.vti.ecommerce.Repository;
 
 
 import com.vti.ecommerce.Model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "select *\n" +
             "from vti_project.tbl_product p\n" +
             "where p.category_id = :categoryId", nativeQuery = true)
-    List<Product> findProductByCategoryId(@Param("categoryId") Long categoryId);
+    Page<Product> findProductByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
     @Query(value = "select *\n" +
             "from vti_project.tbl_product p\n" +
             "inner join (\n" +
@@ -31,5 +33,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "FROM vti_project.tbl_product p\n" +
             "where p.name like %:keyword% \n" +
             "or p.description like %:keyword%",nativeQuery = true)
-    List<Product> findProductsByKeyword(@Param("keyword") String keyword);
+    Page<Product> findProductsByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -9,9 +9,11 @@ import java.util.Optional;
 
 public interface CategoryService {
     public ResponseEntity<Result> getAllCategory();
+    public ResponseEntity<Result> getCategoryByPage(int page, int size);
     public ResponseEntity<Result> addCategory(Category category);
     public ResponseEntity<Result> updateCategory(Category category, Long categoryId);
     public ResponseEntity<Result> deleteCategory(Long categoryId);
+    public ResponseEntity<Result> activeCategory(Long categoryId);
     public ResponseEntity<Result> getCategoryById(Long categoryId);
-    public ResponseEntity<Result> searchCategory(String keyword);
+    public ResponseEntity<Result> searchCategory(String keyword, int page, int size);
 }

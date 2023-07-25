@@ -12,6 +12,8 @@ import com.vti.ecommerce.Service.ProductService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,8 +37,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProduct() {
-        List<Product> products = productRepository.findAll();
+    public List<ProductDTO> getAllProduct(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Product> products = productRepository.findAll(pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
         for(Product product:products){
             ProductDTO productDTO = new ProductDTO();
@@ -171,8 +174,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<Result> searchProduct(String keyword) {
-        List<Product> products = productRepository.findProductsByKeyword(keyword);
+    public ResponseEntity<Result> searchProduct(String keyword, int page , int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Product> products = productRepository.findProductsByKeyword(keyword, pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
         for(Product product:products){
             ProductDTO productDTO = new ProductDTO();
@@ -191,8 +195,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<Result> searchProductByCategory(Long categoryId) {
-        List<Product> products = productRepository.findProductByCategoryId(categoryId);
+    public ResponseEntity<Result> searchProductByCategory(Long categoryId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Product> products = productRepository.findProductByCategoryId(categoryId, pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
         for(Product product:products){
             ProductDTO productDTO = new ProductDTO();

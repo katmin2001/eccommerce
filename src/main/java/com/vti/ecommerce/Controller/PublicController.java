@@ -24,12 +24,16 @@ public class PublicController {
         return productService.getBestSales();
     }
     @GetMapping("/search")
-    public ResponseEntity<Result> searchProductsByKeyword(@RequestParam String q){
-        return productService.searchProduct(q);
+    public ResponseEntity<Result> searchProductsByKeyword(@RequestParam String q,
+                                                          @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "8") int size){
+        return productService.searchProduct(q, page, size);
     }
     @GetMapping("/product-list/{categoryId}")
-    public ResponseEntity<Result> findProductsByCategory(@PathVariable("categoryId") Long categoryId){
-        return productService.searchProductByCategory(categoryId);
+    public ResponseEntity<Result> findProductsByCategory(@PathVariable("categoryId") Long categoryId,
+                                                         @RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "8") int size){
+        return productService.searchProductByCategory(categoryId, page, size);
     }
     @GetMapping("/product/detail/{productId}")
     public ResponseEntity<Result> getProductDetail(@PathVariable("productId") Long productId){

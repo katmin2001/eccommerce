@@ -8,6 +8,8 @@ import com.vti.ecommerce.Service.CategoryService;
 import com.vti.ecommerce.Service.OrderService;
 import com.vti.ecommerce.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +27,9 @@ public class AdminController {
     private OrderService orderService;
     //quản lý category
     @GetMapping("/category/all")
-    public ResponseEntity<Result> getAllCategory(){
-        return categoryService.getAllCategory();
+    public ResponseEntity<Result> getAllCategoryByPage(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "8") int size){
+        return categoryService.getCategoryByPage(page, size);
     }
     @GetMapping("/category/detail/{categoryId}")
     public ResponseEntity<Result> getCategoryById(@PathVariable("categoryId") Long categoryId){
@@ -42,17 +45,28 @@ public class AdminController {
         return categoryService.updateCategory(category,categoryId);
     }
     @GetMapping("/category/search")
-    public ResponseEntity<Result> findCategoriesByKeyword(@RequestParam String q){
-        return categoryService.searchCategory(q);
+    public ResponseEntity<Result> findCategoriesByKeyword(@RequestParam String q,
+                                                          @RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "8") int size){
+        return categoryService.searchCategory(q, page,size);
     }
     @PostMapping("/category/delete/{categoryId}")
     public ResponseEntity<Result> deleteCategory(@PathVariable("categoryId") Long categoryId){
         return categoryService.deleteCategory(categoryId);
     }
+    @PostMapping("/category/active/{categoryId}")
+    public ResponseEntity<Result> activeCategory(@PathVariable("categoryId") Long categoryId){
+        return categoryService.activeCategory(categoryId);
+    }
     //quản lý product
+//    @GetMapping("/product/all")
+//    public ResponseEntity<List<ProductDTO>> getAllProduct(){
+//        return ResponseEntity.ok(productService.getAllProduct());
+//    }
     @GetMapping("/product/all")
-    public ResponseEntity<List<ProductDTO>> getAllProduct(){
-        return ResponseEntity.ok(productService.getAllProduct());
+    public List<ProductDTO> getAllProduct(@RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "8") int size){
+        return productService.getAllProduct(page, size);
     }
     @GetMapping("/product/detail/{productId}")
     public ResponseEntity<Result> getProductById(@PathVariable("productId") Long productId){
@@ -76,12 +90,16 @@ public class AdminController {
         return productService.activeProduct(productId);
     }
     @GetMapping("/product/find-by-category/{categoryId}")
-    public ResponseEntity<Result> findProductByCategory(@PathVariable("categoryId") Long categoryId){
-        return productService.searchProductByCategory(categoryId);
+    public ResponseEntity<Result> findProductByCategory(@PathVariable("categoryId") Long categoryId,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "8") int size){
+        return productService.searchProductByCategory(categoryId, page, size);
     }
     @GetMapping("/product/search")
-    public ResponseEntity<Result> findProductsByKeyword(@RequestParam String q){
-        return productService.searchProduct(q);
+    public ResponseEntity<Result> findProductsByKeyword(@RequestParam String q,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "8") int size){
+        return productService.searchProduct(q, page, size);
     }
     //quản lý đơn hàng - order
     @GetMapping("/order/all")

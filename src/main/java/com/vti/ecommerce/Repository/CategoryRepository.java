@@ -3,6 +3,8 @@ package com.vti.ecommerce.Repository;
 
 import com.vti.ecommerce.Model.Category;
 import com.vti.ecommerce.Model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "FROM vti_project.tbl_category c\n" +
             "where c.name like %:keyword% \n" +
             "or c.description like %:keyword%",nativeQuery = true)
-    List<Category> findCategoriesByKeyword(@Param("keyword") String keyword);
+    Page<Category> findCategoriesByKeyword(@Param("keyword") String keyword,
+                                           Pageable pageable);
 }
