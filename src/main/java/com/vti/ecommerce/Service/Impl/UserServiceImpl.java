@@ -29,9 +29,9 @@ public class UserServiceImpl implements UserService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final UserPaymentRepository userPaymentRepository;
-    private EmailService emailService;
+    private final EmailService emailService;
 
-    public UserServiceImpl(UserRepository userRepository, ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserPaymentRepository userPaymentRepository) {
+    public UserServiceImpl(UserRepository userRepository, ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserPaymentRepository userPaymentRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
@@ -39,6 +39,7 @@ public class UserServiceImpl implements UserService {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userPaymentRepository = userPaymentRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -332,7 +333,6 @@ public class UserServiceImpl implements UserService {
         orderDTO.setCreatedDate(new Date());
         orderDTO.setStatusShipping("Đã đặt");
         orderDTO.setOrderItemList(orderItems);
-
         //gui mail
         User user = userRepository.findByUsername(username).orElseThrow(null);
         emailService.sendMail(order, user);
