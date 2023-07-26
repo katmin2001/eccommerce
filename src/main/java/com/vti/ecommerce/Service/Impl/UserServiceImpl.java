@@ -10,6 +10,8 @@ import com.vti.ecommerce.Service.UserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -87,11 +89,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<Result> getAllOrder(String username) {
-        List<Order> orderList = orderRepository.findAllByUser(userRepository.findByUsername(username).get().getId());
+    public ResponseEntity<Result> getAllOrder(String username, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Order> orderList = orderRepository.findAllByUser(userRepository.findByUsername(username).get().getId(), pageRequest);
         List<OrderDTO> orderDTOList = new ArrayList<>();
         for(Order order: orderList){
             OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setId(order.getId());
             orderDTO.setUser(userRepository.findById(order.getUser_id()).orElseThrow(null));
 //            orderDTO.setUserPayment(order.getUser_payment_id());
             orderDTO.setTotalPrice(order.getTotal_price());

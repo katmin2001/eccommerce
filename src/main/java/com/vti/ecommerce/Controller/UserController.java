@@ -72,10 +72,12 @@ public class UserController {
         return userService.orderProduct(username, cartDTO);
     }
     @GetMapping("/order/all")
-    public ResponseEntity<Result> getAllOrder(HttpServletRequest httpServletRequest){
+    public ResponseEntity<Result> getAllOrder(HttpServletRequest httpServletRequest,
+                                              @RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "8") int size){
         String token = httpServletRequest.getHeader("Authorization").substring(7);
         String username = jwtService.extractUsername(token);
-        return userService.getAllOrder(username);
+        return userService.getAllOrder(username, page, size);
     }
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<Result> getOrderDetail(HttpServletRequest httpServletRequest,

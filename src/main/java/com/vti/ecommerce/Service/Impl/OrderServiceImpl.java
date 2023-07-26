@@ -11,9 +11,11 @@ import com.vti.ecommerce.Service.OrderService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @Transactional
@@ -32,9 +34,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseEntity<Result> getAllOrder() {
+    public ResponseEntity<Result> getAllOrder(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
         logger.info("OK");
-        return ResponseEntity.ok(new Result("SUCCESS","OK",orderRepository.findAll()));
+        return ResponseEntity.ok(new Result("SUCCESS","OK",orderRepository.findAll(pageRequest)));
     }
 
     @Override

@@ -8,12 +8,21 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderDTO {
+    private Long id;
     private User user;
     private UserPayment userPayment;
     private Date createdDate;
     private String statusShipping;
     private Double totalPrice;
     private List<OrderItem> orderItemList;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public User getUser() {
         return user;

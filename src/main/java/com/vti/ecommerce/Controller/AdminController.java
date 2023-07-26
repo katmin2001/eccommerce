@@ -103,8 +103,9 @@ public class AdminController {
     }
     //quản lý đơn hàng - order
     @GetMapping("/order/all")
-    public ResponseEntity<Result> getAllOrder(){
-        return orderService.getAllOrder();
+    public ResponseEntity<Result> getAllOrder( @RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "8") int size){
+        return orderService.getAllOrder(page, size);
     }
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<Result> getOrderDetail(@PathVariable("orderId") Long orderId){

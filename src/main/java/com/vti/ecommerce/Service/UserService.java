@@ -16,7 +16,7 @@ import java.util.List;
 public interface UserService {
     public ResponseEntity<Result> getUserDetail(String username);
     public ResponseEntity<Result> editInfoUser(UserDTO userDTO, String username);
-    public ResponseEntity<Result>  getAllOrder(String username);
+    public ResponseEntity<Result> getAllOrder(String username, int page, int size);
     public ResponseEntity<Result> getOrderDetail(String username, Long orderId);
     public ResponseEntity<Result> getAllUserPayment(String username);
     public ResponseEntity<Result> getDetailUserPayment(Long userPaymentId);
