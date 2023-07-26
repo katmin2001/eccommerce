@@ -16,6 +16,17 @@ public class Order extends BaseEntity{
     @Column(name = "user_payment_id")
     private Long user_payment_id;
 
+    @Column(name = "coupon_id")
+    private Long couponId;
+
+    public Long getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Long couponId) {
+        this.couponId = couponId;
+    }
+
     public Double getTotal_price() {
         return total_price;
     }

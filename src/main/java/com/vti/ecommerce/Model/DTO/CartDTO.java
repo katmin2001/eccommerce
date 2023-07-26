@@ -8,6 +8,15 @@ import java.util.List;
 public class CartDTO {
     private List<Long> cartItemList;
     private Long userPaymentId;
+    private Long couponId;
+
+    public Long getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Long couponId) {
+        this.couponId = couponId;
+    }
 
     public Long getUserPaymentId() {
         return userPaymentId;

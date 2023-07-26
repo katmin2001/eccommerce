@@ -5,6 +5,7 @@ import com.vti.ecommerce.Model.DTO.CartDTO;
 import com.vti.ecommerce.Model.DTO.OrderDTO;
 import com.vti.ecommerce.Model.DTO.UserDTO;
 import com.vti.ecommerce.Repository.*;
+import com.vti.ecommerce.Service.CouponService;
 import com.vti.ecommerce.Service.EmailService;
 import com.vti.ecommerce.Service.UserService;
 import jakarta.transaction.Transactional;
@@ -32,8 +33,9 @@ public class UserServiceImpl implements UserService {
     private final OrderItemRepository orderItemRepository;
     private final UserPaymentRepository userPaymentRepository;
     private final EmailService emailService;
+    private final CouponRepository couponRepository;
 
-    public UserServiceImpl(UserRepository userRepository, ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserPaymentRepository userPaymentRepository, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, ProductRepository productRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserPaymentRepository userPaymentRepository, EmailService emailService, CouponService couponService, CouponRepository couponRepository) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
         this.orderItemRepository = orderItemRepository;
         this.userPaymentRepository = userPaymentRepository;
         this.emailService = emailService;
+        this.couponRepository = couponRepository;
     }
 
     @Override
@@ -322,7 +325,27 @@ public class UserServiceImpl implements UserService {
             orderItems.add(orderItem);
             cartItems.add(cartItem);
         }
-        order.setTotal_price(total_price);
+        //su dung coupon
+        Coupon coupon = couponRepository.findById(cartDTO.getCouponId()).orElseThrow(null);
+        if (coupon == null){
+            logger.error("NOT FOUND COUPON");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT FOUND COUPON","NOT_FOUND", null));
+        }
+        if(coupon.getMaxUsage()>1){
+            total_price = total_price - (total_price*coupon.getDiscountPercent())/100;
+            order.setTotal_price((double) Math.round(total_price));
+            coupon.setMaxUsage(coupon.getMaxUsage() - 1);
+        } else if (coupon.getMaxUsage() == 1) {
+            total_price = total_price - (total_price*coupon.getDiscountPercent())/100;
+            order.setTotal_price((double) Math.round(total_price));
+            coupon.setMaxUsage(coupon.getMaxUsage() - 1);
+            coupon.setStatus(false);
+        } else {
+            logger.error("NOT ENOUGH COUPON");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH COUPON","CONFLICT", null));
+        }
+        couponRepository.save(coupon);
+
         orderRepository.save(order);
         for(OrderItem orderItem: orderItems){
             orderItem.setOrder_id(order.getId());
@@ -337,6 +360,7 @@ public class UserServiceImpl implements UserService {
         orderDTO.setCreatedDate(new Date());
         orderDTO.setStatusShipping("Đã đặt");
         orderDTO.setOrderItemList(orderItems);
+        orderDTO.setCoupon(coupon);
         //gui mail
         User user = userRepository.findByUsername(username).orElseThrow(null);
         emailService.sendMail(order, user);

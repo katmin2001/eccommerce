@@ -1,18 +1,23 @@
 package com.vti.ecommerce.Controller;
 
 import com.vti.ecommerce.Model.Category;
+import com.vti.ecommerce.Model.Coupon;
+import com.vti.ecommerce.Model.DTO.CouponDTO;
 import com.vti.ecommerce.Model.DTO.ProductDTO;
 import com.vti.ecommerce.Model.DTO.ProductRequestDTO;
 import com.vti.ecommerce.Model.Result;
 import com.vti.ecommerce.Service.CategoryService;
+import com.vti.ecommerce.Service.CouponService;
 import com.vti.ecommerce.Service.OrderService;
 import com.vti.ecommerce.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +30,8 @@ public class AdminController {
     private ProductService productService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private CouponService couponService;
     //quản lý category
     @GetMapping("/category/all")
     public ResponseEntity<Result> getAllCategoryByPage(@RequestParam(defaultValue = "0") int page,
@@ -110,5 +117,28 @@ public class AdminController {
     @GetMapping("/order/detail/{orderId}")
     public ResponseEntity<Result> getOrderDetail(@PathVariable("orderId") Long orderId){
         return orderService.getOrderDetail(orderId);
+    }
+    //quan ly coupon
+    @GetMapping("/coupon/all")
+    public ResponseEntity<Result> getAllCoupon(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "8") int size){
+        return couponService.getAllCoupon(page, size);
+    }
+    @PostMapping("/coupon/add")
+    public ResponseEntity<Result> addCoupon(@RequestBody CouponDTO couponDTO) {
+        return couponService.addCoupon(couponDTO);
+    }
+    @PostMapping("/coupon/update/{couponId}")
+    public ResponseEntity<Result> updateCoupon(@RequestBody CouponDTO couponDTO,
+                                               @PathVariable("couponId") Long couponId){
+        return couponService.updateCoupon(couponDTO,couponId);
+    }
+    @PostMapping("/coupon/delete/{couponId}")
+    public ResponseEntity<Result> deleteCoupon(@PathVariable("couponId") Long couponId){
+        return couponService.deleteCoupon(couponId);
+    }
+    @PostMapping("/coupon/active/{couponId}")
+    public ResponseEntity<Result> activeCoupon(@PathVariable("couponId") Long couponId){
+        return couponService.activeCoupon(couponId);
     }
 }

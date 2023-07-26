@@ -1,5 +1,6 @@
 package com.vti.ecommerce.Model.DTO;
 
+import com.vti.ecommerce.Model.Coupon;
 import com.vti.ecommerce.Model.OrderItem;
 import com.vti.ecommerce.Model.User;
 import com.vti.ecommerce.Model.UserPayment;
@@ -15,6 +16,16 @@ public class OrderDTO {
     private String statusShipping;
     private Double totalPrice;
     private List<OrderItem> orderItemList;
+
+    private Coupon coupon;
+
+    public Coupon getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(Coupon coupon) {
+        this.coupon = coupon;
+    }
 
     public Long getId() {
         return id;
