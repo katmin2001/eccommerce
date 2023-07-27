@@ -15,7 +15,6 @@ public class ProductRequestDTO {
     private Long categoryId;
     private Date createdDate;
     private Date updateDate;
-    private List<ProductImage> productImages;
 
     public Long getId() {
         return id;
@@ -81,11 +80,4 @@ public class ProductRequestDTO {
         this.updateDate = updateDate;
     }
 
-    public List<ProductImage> getProductImages() {
-        return productImages;
-    }
-
-    public void setProductImages(List<ProductImage> productImages) {
-        this.productImages = productImages;
-    }
 }

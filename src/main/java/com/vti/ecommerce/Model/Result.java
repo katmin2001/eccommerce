@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 public class Result {
     private String message;
-
     private String status;
     private Object data;
 
