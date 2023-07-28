@@ -47,13 +47,13 @@ public class AdminController {
         return categoryService.getCategoryById(categoryId);
     }
     @PostMapping("/category/add")
-    public ResponseEntity<Result> addCategory(@ModelAttribute Category category,
-                                              @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Result> addCategory(@RequestPart("category") Category category,
+                                              @RequestPart("file") MultipartFile file) throws IOException {
         return categoryService.addCategory(category,file);
     }
     @PostMapping("/category/update/{categoryId}")
-    public ResponseEntity<Result> updateCategory(@ModelAttribute Category category,
-                                                 @RequestParam("file") MultipartFile file,
+    public ResponseEntity<Result> updateCategory(@RequestPart("category") Category category,
+                                                 @RequestPart("file") MultipartFile file,
                                                  @PathVariable("categoryId") Long categoryId){
         return categoryService.updateCategory(category,file,categoryId);
     }
@@ -86,8 +86,8 @@ public class AdminController {
         return productService.getProductById(productId);
     }
     @PostMapping("/product/add")
-    public ResponseEntity<Result> addProduct(@ModelAttribute Product product,
-                                             @RequestParam("files") List<MultipartFile> files){
+    public ResponseEntity<Result> addProduct(@RequestPart("product") Product product,
+                                             @RequestPart("files") List<MultipartFile> files){
         try {
             return productService.addProduct(product, files);
         } catch (IOException e) {
@@ -95,8 +95,8 @@ public class AdminController {
         }
     }
     @PostMapping("/product/update/{productId}")
-    public ResponseEntity<Result> updateProduct(@ModelAttribute Product product,
-                                                @RequestParam("files") List<MultipartFile> files,
+    public ResponseEntity<Result> updateProduct(@RequestPart("product") Product product,
+                                                @RequestPart("files") List<MultipartFile> files,
                                                 @PathVariable("productId") Long productId){
         return productService.updateProduct(product,files, productId);
     }
