@@ -16,4 +16,8 @@ public interface ProductImageRepository extends JpaRepository<ProductImage, Long
             "FROM vti_project.tbl_product_image pi\n" +
             "where pi.product_id = :productId",nativeQuery = true)
     List<ProductImage> findProductsImagesByProductId(@Param("productId") Long productId);
+    @Query(value = "SELECT * \n" +
+            "FROM vti_project.tbl_product_image pi\n" +
+            "where pi.source_image = :path", nativeQuery = true)
+    ProductImage findProductImagesByPath(@Param("path") String path);
 }

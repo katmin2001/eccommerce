@@ -37,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ExcelService excelService;
+
     public ProductServiceImpl(ProductImageRepository productImageRepository, ProductRepository productRepository, CategoryRepository categoryRepository, ExcelService excelService) {
         this.productImageRepository = productImageRepository;
         this.productRepository = productRepository;
@@ -49,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Product> products = productRepository.findAll(pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
-        for(Product product:products){
+        for (Product product : products) {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setId(product.getId());
             productDTO.setName(product.getName());
@@ -67,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<Result> getProductById(Long productId) {
-        try{
+        try {
             Product product = productRepository.findById(productId).orElseThrow(null);
             ProductDTO productDTO = new ProductDTO();
             productDTO.setId(product.getId());
@@ -80,32 +81,33 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",productDTO));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", productDTO));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND PRODUCT", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT", "NOT_FOUND", null));
         }
     }
 
     @Override
     public ResponseEntity<Result> addProduct(Product product, List<MultipartFile> files) throws IOException {
-        if(productRepository.existsProductByName(product.getName())){
+        if (productRepository.existsProductByName(product.getName())) {
             logger.error("EXIST PRODUCT!");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("EXIST PRODUCT!","CONFLICT",null));
-        }
-        else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("EXIST PRODUCT!", "CONFLICT", null));
+        } else {
             product.setCreated_date(new Date());
             productRepository.save(product);
 
             String uploadDir = "upload/image";
-            if(!Files.exists(Paths.get(uploadDir))){
+            if (!Files.exists(Paths.get(uploadDir))) {
                 Files.createDirectories(Paths.get(uploadDir));
             }
             List<ProductImage> productImages = new ArrayList<>();
-            for(MultipartFile file:files){
+            for (MultipartFile file : files) {
                 String fileName = file.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir,fileName);
-                Files.copy(file.getInputStream(),filePath);
+                String[] name = fileName.split("\\.");
+                fileName = product.getName() + "-" + product.getId() + "." + name[1];
+                Path filePath = Paths.get(uploadDir, fileName);
+                Files.copy(file.getInputStream(), filePath);
 
                 ProductImage productImage = new ProductImage();
                 productImage.setSource_image(filePath.toString());
@@ -116,82 +118,103 @@ public class ProductServiceImpl implements ProductService {
             }
             productImageRepository.saveAll(productImages);
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",product));
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", product));
         }
     }
 
     @Override
-    public ResponseEntity<Result> updateProduct(ProductRequestDTO productRequestDTO, Long productId) {
-        return null;
-//        try{
-//            Product product = productRepository.findById(productId).orElseThrow(null);
-//            if(productRequestDTO.getName() != null){
-//                product.setName(productRequestDTO.getName());
-//            }
-//            if(productRequestDTO.getPrice() != null){
-//                product.setPrice(productRequestDTO.getPrice());
-//            }
-//            if(productRequestDTO.getDescription() != null){
-//                product.setDescription(productRequestDTO.getDescription());
-//            }
-//            if(productRequestDTO.getAmount() != null){
-//                product.setAmount(productRequestDTO.getAmount());
-//            }
-//            if(productRequestDTO.getCategoryId() != null){
-//                product.setCategory_id(productRequestDTO.getCategoryId());
-//            }
-//            product.setUpdate_date(new Date());
-//            productRepository.save(product);
-//            if(productRequestDTO.getProductImages().size() != 0){
-//                List<ProductImage> productImages = productImageRepository.findProductsImagesByProductId(productId);
-//                productImageRepository.deleteAll(productImages);
-//                for(ProductImage productImage: productRequestDTO.getProductImages()){
-//                    productImage.setProduct_id(productId);
-//                    productImage.setCreated_date(new Date());
-//                    productImage.setUpdate_date(new Date());
-//                }
-//                productImageRepository.saveAll(productRequestDTO.getProductImages());
-//            }
-//            logger.info("SUCCESS");
-//            return ResponseEntity.ok(new Result("SUCCESS","OK", product));
-//        }catch (NullPointerException e){
-//            logger.error("NOT FOUND PRODUCT", e);
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT","NOT_FOUND",null));
-//        }
+    public ResponseEntity<Result> updateProduct(Product product, List<MultipartFile> files, Long productId) {
+        try {
+            Product product1 = productRepository.findById(productId).orElseThrow(null);
+            if (product.getName() != null) {
+                product1.setName(product.getName());
+            }
+            if (product.getPrice() != null) {
+                product1.setPrice(product.getPrice());
+            }
+            if (product.getDescription() != null) {
+                product1.setDescription(product.getDescription());
+            }
+            if (product.getAmount() != null) {
+                product1.setAmount(product.getAmount());
+            }
+            if (product.getCategory_id() != null) {
+                product1.setCategory_id(product.getCategory_id());
+            }
+            product1.setUpdate_date(new Date());
+            productRepository.save(product1);
+
+            String uploadDir = "upload/image";
+            if (files.size() != 0) {
+                List<ProductImage> productImageList = productImageRepository.findProductsImagesByProductId(productId);
+                for(ProductImage productImage: productImageList){
+                    String imagePath = productImage.getSource_image();
+                    if(imagePath != null && !imagePath.isEmpty()){
+                        Files.deleteIfExists(Paths.get(imagePath));
+                    }
+                }
+                productImageRepository.deleteAll(productImageList);
+
+                List<ProductImage> productImages = new ArrayList<>();
+                for (MultipartFile file : files) {
+                    String fileName = file.getOriginalFilename();
+                    String[] name = fileName.split("\\.");
+                    fileName = product1.getName() + "-" + productId + "." + name[1];
+                    Path filePath = Paths.get(uploadDir, fileName);
+                    Files.copy(file.getInputStream(), filePath);
+
+                    ProductImage productImage = new ProductImage();
+                    productImage.setSource_image(filePath.toString());
+                    productImage.setCreated_date(new Date());
+                    productImage.setUpdate_date(new Date());
+                    productImage.setProduct_id(productId);
+                    productImages.add(productImage);
+
+                }
+                productImageRepository.saveAll(productImages);
+            }
+            logger.info("SUCCESS");
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", product1));
+        } catch (NullPointerException e) {
+            logger.error("NOT FOUND PRODUCT", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT", "NOT_FOUND", null));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Result("Error importing product image","BAD_REQUEST", e.getMessage()));
+        }
     }
 
     @Override
     public ResponseEntity<Result> deleteProduct(Long productId) {
-        try{
+        try {
             Product product = productRepository.findById(productId).orElseThrow(null);
             product.setStatus(false);
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK", product));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", product));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND PRODUCT", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT", "NOT_FOUND", null));
         }
     }
 
     @Override
     public ResponseEntity<Result> activeProduct(Long productId) {
-        try{
+        try {
             Product product = productRepository.findById(productId).orElseThrow(null);
             product.setStatus(true);
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK", product));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", product));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND PRODUCT", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT", "NOT_FOUND", null));
         }
     }
 
     @Override
-    public ResponseEntity<Result> searchProduct(String keyword, int page , int size) {
+    public ResponseEntity<Result> searchProduct(String keyword, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Product> products = productRepository.findProductsByKeyword(keyword, pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
-        for(Product product:products){
+        for (Product product : products) {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setId(product.getId());
             productDTO.setName(product.getName());
@@ -204,7 +227,7 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
             productDTOS.add(productDTO);
         }
-        return ResponseEntity.ok(new Result("SUCCESS","OK", productDTOS));
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", productDTOS));
     }
 
     @Override
@@ -212,7 +235,7 @@ public class ProductServiceImpl implements ProductService {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Product> products = productRepository.findProductByCategoryId(categoryId, pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
-        for(Product product:products){
+        for (Product product : products) {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setId(product.getId());
             productDTO.setName(product.getName());
@@ -226,14 +249,14 @@ public class ProductServiceImpl implements ProductService {
             productDTOS.add(productDTO);
         }
         logger.info("SUCCESS");
-        return ResponseEntity.ok(new Result("SUCCESS","OK", productDTOS));
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", productDTOS));
     }
 
     @Override
     public ResponseEntity<Result> getBestSales() {
         List<Product> products = productRepository.findProductsBySales();
         List<ProductDTO> productDTOS = new ArrayList<>();
-        for(Product product:products){
+        for (Product product : products) {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setId(product.getId());
             productDTO.setName(product.getName());
@@ -247,28 +270,28 @@ public class ProductServiceImpl implements ProductService {
             productDTOS.add(productDTO);
         }
         logger.info("SUCCESS");
-        return ResponseEntity.ok(new Result("SUCCESS","OK", productDTOS));
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", productDTOS));
     }
 
     @Override
     public ResponseEntity<Result> importProductsFromExcel(MultipartFile file) throws IOException {
         List<List<String>> rows = excelService.readExcel(file);
         List<Product> products = new ArrayList<>();
-        int indexNameProduct = 0,indexPrice = 0,indexQuantity = 0,indexCategory = 0,indexDescription = 0;
-        for(int i = 0; i < rows.get(0).size(); i++){
-            if(rows.get(0).get(i).equals("Tên sản phẩm")){
+        int indexNameProduct = 0, indexPrice = 0, indexQuantity = 0, indexCategory = 0, indexDescription = 0;
+        for (int i = 0; i < rows.get(0).size(); i++) {
+            if (rows.get(0).get(i).equals("Tên sản phẩm")) {
                 indexNameProduct = i;
             }
-            if(rows.get(0).get(i).equals("Giá")){
+            if (rows.get(0).get(i).equals("Giá")) {
                 indexPrice = i;
             }
-            if(rows.get(0).get(i).equals("Số lượng hàng")){
+            if (rows.get(0).get(i).equals("Số lượng hàng")) {
                 indexQuantity = i;
             }
-            if(rows.get(0).get(i).equals("Loại hàng")){
+            if (rows.get(0).get(i).equals("Loại hàng")) {
                 indexCategory = i;
             }
-            if(rows.get(0).get(i).equals("Mô tả")){
+            if (rows.get(0).get(i).equals("Mô tả")) {
                 indexDescription = i;
             }
 //            switch (rows.get(0).get(i)){
@@ -285,8 +308,8 @@ public class ProductServiceImpl implements ProductService {
 //            }
         }
         rows.remove(0);
-        for(List<String> row: rows){
-            if (row.get(0) == ""){
+        for (List<String> row : rows) {
+            if (row.get(0) == "") {
                 break;
             }
             String productName = row.get(indexNameProduct);

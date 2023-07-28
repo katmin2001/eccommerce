@@ -15,8 +15,8 @@ import java.util.List;
 public interface ProductService {
     public List<ProductDTO> getAllProduct(int page, int size);
     public ResponseEntity<Result> getProductById(Long productId);
-    public ResponseEntity<Result> addProduct(Product product, List<MultipartFile> file) throws IOException;
-    public ResponseEntity<Result> updateProduct(ProductRequestDTO productRequestDTO, Long productId);
+    public ResponseEntity<Result> addProduct(Product product, List<MultipartFile> files) throws IOException;
+    public ResponseEntity<Result> updateProduct(Product product, List<MultipartFile> file, Long productId);
     public ResponseEntity<Result> deleteProduct(Long productId);
     public ResponseEntity<Result> activeProduct(Long productId);
     public ResponseEntity<Result> searchProduct(String keyword, int page, int size);

@@ -47,13 +47,15 @@ public class AdminController {
         return categoryService.getCategoryById(categoryId);
     }
     @PostMapping("/category/add")
-    public ResponseEntity<Result> addCategory(@RequestBody Category category){
-        return categoryService.addCategory(category);
+    public ResponseEntity<Result> addCategory(@ModelAttribute Category category,
+                                              @RequestParam("file") MultipartFile file) throws IOException {
+        return categoryService.addCategory(category,file);
     }
     @PostMapping("/category/update/{categoryId}")
-    public ResponseEntity<Result> updateCategory(@RequestBody Category category,
-                                                   @PathVariable("categoryId") Long categoryId){
-        return categoryService.updateCategory(category,categoryId);
+    public ResponseEntity<Result> updateCategory(@ModelAttribute Category category,
+                                                 @RequestParam("file") MultipartFile file,
+                                                 @PathVariable("categoryId") Long categoryId){
+        return categoryService.updateCategory(category,file,categoryId);
     }
     @GetMapping("/category/search")
     public ResponseEntity<Result> findCategoriesByKeyword(@RequestParam String q,
@@ -93,9 +95,10 @@ public class AdminController {
         }
     }
     @PostMapping("/product/update/{productId}")
-    public ResponseEntity<Result> updateProduct(@RequestBody ProductRequestDTO productRequestDTO,
-                                                 @PathVariable("productId") Long productId){
-        return productService.updateProduct(productRequestDTO, productId);
+    public ResponseEntity<Result> updateProduct(@ModelAttribute Product product,
+                                                @RequestParam("files") List<MultipartFile> files,
+                                                @PathVariable("productId") Long productId){
+        return productService.updateProduct(product,files, productId);
     }
     @PostMapping("/product/delete/{productId}")
     public ResponseEntity<Result> deleteProduct(@PathVariable("productId") Long productId){
