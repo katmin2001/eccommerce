@@ -147,9 +147,9 @@ public class ProductServiceImpl implements ProductService {
             String uploadDir = "upload/image";
             if (files.size() != 0) {
                 List<ProductImage> productImageList = productImageRepository.findProductsImagesByProductId(productId);
-                for(ProductImage productImage: productImageList){
+                for (ProductImage productImage : productImageList) {
                     String imagePath = productImage.getSource_image();
-                    if(imagePath != null && !imagePath.isEmpty()){
+                    if (imagePath != null && !imagePath.isEmpty()) {
                         Files.deleteIfExists(Paths.get(imagePath));
                     }
                 }
@@ -179,7 +179,7 @@ public class ProductServiceImpl implements ProductService {
             logger.error("NOT FOUND PRODUCT", e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT", "NOT_FOUND", null));
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Result("Error importing product image","BAD_REQUEST", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Result("Error importing product image", "BAD_REQUEST", e.getMessage()));
         }
     }
 
@@ -279,33 +279,23 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = new ArrayList<>();
         int indexNameProduct = 0, indexPrice = 0, indexQuantity = 0, indexCategory = 0, indexDescription = 0;
         for (int i = 0; i < rows.get(0).size(); i++) {
-            if (rows.get(0).get(i).equals("Tên sản phẩm")) {
-                indexNameProduct = i;
+            switch (rows.get(0).get(i)) {
+                case "Tên sản phẩm":
+                    indexNameProduct = i;
+                    break;
+                case "Giá":
+                    indexPrice = i;
+                    break;
+                case "Số lượng hàng":
+                    indexQuantity = i;
+                    break;
+                case "Loại hàng":
+                    indexCategory = i;
+                    break;
+                case "Mô tả":
+                    indexDescription = i;
+                    break;
             }
-            if (rows.get(0).get(i).equals("Giá")) {
-                indexPrice = i;
-            }
-            if (rows.get(0).get(i).equals("Số lượng hàng")) {
-                indexQuantity = i;
-            }
-            if (rows.get(0).get(i).equals("Loại hàng")) {
-                indexCategory = i;
-            }
-            if (rows.get(0).get(i).equals("Mô tả")) {
-                indexDescription = i;
-            }
-//            switch (rows.get(0).get(i)){
-//                case "Tên sản phẩm":
-//                     indexNameProduct = i;
-//                case "Giá":
-//                     indexPrice = i;
-//                case "Số lượng hàng":
-//                     indexQuantity = i;
-//                case "Loại hàng":
-//                     indexCategory = i;
-//                case "Mô tả":
-//                     indexDescription = i;
-//            }
         }
         rows.remove(0);
         for (List<String> row : rows) {

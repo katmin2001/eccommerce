@@ -12,12 +12,32 @@ import java.util.Date;
 public class Coupon extends BaseEntity{
     @Column(name = "code")
     private String code;
-    @Column(name = "discount_percent")
-    private int discountPercent;
+    @Column(name = "discount")
+    private Double discount;
+    @Column(name = "type")
+    private String type;
+    @Column(name = "condition_discount")
+    private Double condition;
     @Column(name = "expiration_date")
     private Date expirationDate;
     @Column(name = "max_usage")
     private int maxUsage;
+
+    public Double getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Double condition) {
+        this.condition = condition;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getCode() {
         return code;
@@ -27,12 +47,12 @@ public class Coupon extends BaseEntity{
         this.code = code;
     }
 
-    public int getDiscountPercent() {
-        return discountPercent;
+    public Double getDiscount() {
+        return discount;
     }
 
-    public void setDiscountPercent(int discountPercent) {
-        this.discountPercent = discountPercent;
+    public void setDiscount(Double discount) {
+        this.discount = discount;
     }
 
     public Date getExpirationDate() {

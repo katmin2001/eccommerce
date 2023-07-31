@@ -41,7 +41,9 @@ public class CouponServiceImpl implements CouponService {
             coupon = new Coupon();
             coupon.setCode(couponDTO.getCode());
             coupon.setMaxUsage(couponDTO.getMaxUsage());
-            coupon.setDiscountPercent(couponDTO.getDiscountPercent());
+            coupon.setDiscount(couponDTO.getDiscount());
+            coupon.setType(couponDTO.getType());
+            coupon.setCondition(couponDTO.getCondition());
             if(couponDTO.getExpirationDate().compareTo(new Date()) < 0){
                 logger.error("CONFLICT DATE");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("CONFLICT DATE","CONFLICT",null));
@@ -73,8 +75,8 @@ public class CouponServiceImpl implements CouponService {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("CONFLICT CODE", "CONFLICT",null));
                 }
             }
-            if(couponDTO.getDiscountPercent() != 0){
-                coupon.setDiscountPercent(couponDTO.getDiscountPercent());
+            if(couponDTO.getDiscount() != null){
+                coupon.setDiscount(couponDTO.getDiscount());
             }
             if (couponDTO.getExpirationDate() != null){
                 if(couponDTO.getExpirationDate().compareTo(new Date()) < 0){
@@ -87,6 +89,12 @@ public class CouponServiceImpl implements CouponService {
             }
             if(couponDTO.getMaxUsage() != 0){
                 coupon.setMaxUsage(couponDTO.getMaxUsage());
+            }
+            if(couponDTO.getType() != null){
+                coupon.setType(couponDTO.getType());
+            }
+            if(couponDTO.getCondition() != null){
+                coupon.setCondition(couponDTO.getCondition());
             }
             coupon.setUpdate_date(new Date());
             logger.info("UPDATE SUCCESS");

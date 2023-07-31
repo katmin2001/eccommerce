@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.vti.ecommerce.Model.CouponType;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<Result> getUserDetail(String username) {
-        try{
+        try {
             User user = userRepository.findByUsername(username).orElseThrow(null);
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(user.getUsername());
@@ -59,35 +61,35 @@ public class UserServiceImpl implements UserService {
             userDTO.setPhone(user.getPhone());
             userDTO.setAddress(user.getAddress());
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",userDTO));
-        }catch(NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", userDTO));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER", "NOT_FOUND", null));
         }
     }
 
     @Override
-    public ResponseEntity<Result> editInfoUser(UserDTO userDTO,String username) {
-        try{
+    public ResponseEntity<Result> editInfoUser(UserDTO userDTO, String username) {
+        try {
             User user = userRepository.findByUsername(username).orElseThrow(null);
-            if(userDTO.getName() != null){
+            if (userDTO.getName() != null) {
                 user.setName(userDTO.getName());
             }
-            if(userDTO.getEmail() != null){
+            if (userDTO.getEmail() != null) {
                 user.setEmail(userDTO.getEmail());
             }
-            if(userDTO.getPhone() != null){
+            if (userDTO.getPhone() != null) {
                 user.setPhone(userDTO.getPhone());
             }
-            if(userDTO.getAddress() != null){
+            if (userDTO.getAddress() != null) {
                 user.setAddress(userDTO.getAddress());
             }
             user.setUpdate_date(new Date());
             logger.info("UPDATE SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",userRepository.save(user)));
-        }catch(NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", userRepository.save(user)));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER", "NOT_FOUND", null));
         }
     }
 
@@ -96,7 +98,7 @@ public class UserServiceImpl implements UserService {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Order> orderList = orderRepository.findAllByUser(userRepository.findByUsername(username).get().getId(), pageRequest);
         List<OrderDTO> orderDTOList = new ArrayList<>();
-        for(Order order: orderList){
+        for (Order order : orderList) {
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setId(order.getId());
             orderDTO.setUser(userRepository.findById(order.getUser_id()).orElseThrow(null));
@@ -108,13 +110,13 @@ public class UserServiceImpl implements UserService {
             orderDTOList.add(orderDTO);
         }
         logger.info("SUCCESS");
-        return ResponseEntity.ok(new Result("SUCCESS","OK",orderDTOList));
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", orderDTOList));
     }
 
     @Override
     public ResponseEntity<Result> getOrderDetail(String username, Long orderId) {
 //        Order order = orderRepository.findOrderByUser(userRepository.findByUsername(username).get().getId(), orderId);
-        try{
+        try {
             Order order = orderRepository.findById(orderId).orElseThrow(null);
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setUser(userRepository.findById(order.getUser_id()).orElseThrow(null));
@@ -124,96 +126,99 @@ public class UserServiceImpl implements UserService {
             orderDTO.setStatusShipping(orderDTO.getStatusShipping());
             orderDTO.setOrderItemList(orderItemRepository.findOrderItemsByOrderId(order.getId()));
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",orderDTO));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", orderDTO));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND ORDER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND ORDER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND ORDER", "NOT_FOUND", null));
         }
     }
-//thanh toan cua user
+
+    //thanh toan cua user
     @Override
     public ResponseEntity<Result> getAllUserPayment(String username) {
-        try{
+        try {
             User user = userRepository.findByUsername(username).orElseThrow(null);
             List<UserPayment> userPayments = userPaymentRepository.findUserPaymentsByUserId(user.getId());
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCESS","OK", userPayments));
-        }catch(NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCESS", "OK", userPayments));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER", "NOT_FOUND", null));
         }
     }
 
     @Override
     public ResponseEntity<Result> getDetailUserPayment(Long userPaymentId) {
-        try{
+        try {
             UserPayment userPayment = userPaymentRepository.findById(userPaymentId).orElseThrow(null);
             logger.info("SUCCESS");
-            return ResponseEntity.ok(new Result("SUCESS","OK", userPayment));
-        }catch(NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCESS", "OK", userPayment));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USERPAYMENT");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USERPAYMENT","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USERPAYMENT", "NOT_FOUND", null));
         }
     }
 
     @Override
     public ResponseEntity<Result> addUserPayment(String username, UserPayment userPayment) {
-        try{
+        try {
             User user = userRepository.findByUsername(username).orElseThrow(null);
-            if (userPaymentRepository.findUserPaymentByNumber_card(userPayment.getNumber_card()) != null){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("USERPAYMENT EXIST","CONFLICT",null));
+            if (userPaymentRepository.findUserPaymentByNumber_card(userPayment.getNumber_card()) != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("USERPAYMENT EXIST", "CONFLICT", null));
             }
             userPayment.setUser_id(user.getId());
             userPayment.setCreated_date(new Date());
             logger.info("ADD SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",userPaymentRepository.save(userPayment)));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", userPaymentRepository.save(userPayment)));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER", "NOT_FOUND", null));
         }
     }
 
     @Override
     public ResponseEntity<Result> updateUserPayment(String username, Long userPaymentId, UserPayment userPaymentReQ) {
-        try{
+        try {
             User user = userRepository.findByUsername(username).orElseThrow(null);
             UserPayment userPayment = userPaymentRepository.findById(userPaymentId).orElseThrow(null);
-            if (userPayment == null){
+            if (userPayment == null) {
                 logger.error("NOT FOUND USERPAYMENT");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USERPAYMENT","NOT_FOUND",null));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USERPAYMENT", "NOT_FOUND", null));
             }
-            if (userPaymentRepository.findUserPaymentByNumber_card(userPaymentReQ.getNumber_card()) != null){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("USERPAYMENT EXIST","CONFLICT",null));
+            if (userPaymentRepository.findUserPaymentByNumber_card(userPaymentReQ.getNumber_card()) != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("USERPAYMENT EXIST", "CONFLICT", null));
             }
             userPayment.setProvider(userPaymentReQ.getProvider());
             userPayment.setNumber_card(userPaymentReQ.getNumber_card());
             userPayment.setUpdate_date(new Date());
             logger.info("UPDATE SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK", userPaymentRepository.save(userPayment)));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", userPaymentRepository.save(userPayment)));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER", "NOT_FOUND", null));
         }
     }
+
     @Override
     public ResponseEntity<Result> deleteUserPayment(Long userPaymentId) {
-        try{
+        try {
             UserPayment userPayment = userPaymentRepository.findById(userPaymentId).orElseThrow(null);
             userPaymentRepository.delete(userPayment);
             logger.info("DELETE SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",null));
-        }catch(NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", null));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND USER");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER","NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND USER", "NOT_FOUND", null));
         }
     }
-//quản lý cart
+
+    //quản lý cart
     @Override
     public ResponseEntity<Result> addToCart(Long productId, String username) {
-        try{
+        try {
             Product product = productRepository.findById(productId).orElseThrow(null);
             Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).orElse(null).getId());
-            if(cart == null){
+            if (cart == null) {
                 cart = new Cart();
                 cart.setUser_id(userRepository.findByUsername(username).orElse(null).getId());
                 cart.setCreated_date(new Date());
@@ -222,22 +227,21 @@ public class UserServiceImpl implements UserService {
 //        List<CartItem> cartItems = cartItemRepository.findCartItemsByUser(cart.getId());
 
             CartItem cartItem = cartItemRepository.findCartItemByProductIdAndUserId(productId, cart.getId());
-            if(cartItem == null){
+            if (cartItem == null) {
                 cartItem = new CartItem();
                 cartItem.setCart_id(cart.getId());
                 cartItem.setQuantity(1);
                 cartItem.setProduct_id(productId);
                 cartItem.setCreated_date(new Date());
-            }
-            else {
-                cartItem.setQuantity(cartItem.getQuantity()+1);
+            } else {
+                cartItem.setQuantity(cartItem.getQuantity() + 1);
                 cartItem.setUpdate_date(new Date());
             }
             logger.info("ADD TO CART SUCCESS");
-            return ResponseEntity.ok(new Result("SUCCESS","OK",cartItemRepository.save(cartItem)));
-        }catch (NullPointerException e){
+            return ResponseEntity.ok(new Result("SUCCESS", "OK", cartItemRepository.save(cartItem)));
+        } catch (NullPointerException e) {
             logger.error("NOT FOUND PRODUCT");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT","NOT_FOUND", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND PRODUCT", "NOT_FOUND", null));
         }
     }
 
@@ -245,51 +249,51 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<Result> getCart(String username) {
 //        List<CartDTO> cartDTOS = new ArrayList<>();
         Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).get().getId());
-        if(cart == null){
+        if (cart == null) {
             logger.error("NOT FOUND CART");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CART", "NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CART", "NOT_FOUND", null));
         }
         List<CartItem> cartItems = cartItemRepository.findCartItemsByUser(cart.getId());
         logger.info("SUCCESS");
-        return ResponseEntity.ok(new Result("SUCCESS","OK",cartItems));
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", cartItems));
     }
 
     @Override
     public ResponseEntity<Result> removeItemInCart(String username, Long cartItemId) {
         Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).get().getId());
-        if(cart == null){
+        if (cart == null) {
             logger.error("NOT FOUND CART");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CART", "NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CART", "NOT_FOUND", null));
         }
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(null);
-        if(cartItem == null){
+        if (cartItem == null) {
             logger.error("NOT FOUND CARTITEM");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CARTITEM", "NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CARTITEM", "NOT_FOUND", null));
         }
         cartItemRepository.delete(cartItem);
         List<CartItem> cartItems = cartItemRepository.findCartItemsByUser(cart.getId());
 
         logger.info("REMOVE SUCCESS");
-        return ResponseEntity.ok(new Result("SUCCESS","OK",cartItems));
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", cartItems));
 
     }
 
     @Override
     public ResponseEntity<Result> updateQuantityProduct(String username, CartItem cartItem, Long cartItemId) {
         Cart cart = cartRepository.findCartByUserId(userRepository.findByUsername(username).get().getId());
-        if(cart == null){
+        if (cart == null) {
             logger.error("NOT FOUND CART");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CART", "NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CART", "NOT_FOUND", null));
         }
         CartItem cartItem1 = cartItemRepository.findById(cartItemId).orElseThrow(null);
-        if(cartItem1 == null){
+        if (cartItem1 == null) {
             logger.error("NOT FOUND CARTITEM");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CARTITEM", "NOT_FOUND",null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Result("NOT FOUND CARTITEM", "NOT_FOUND", null));
         }
         cartItem1.setQuantity(cartItem.getQuantity());
         cartItem1.setUpdate_date(new Date());
         logger.info("ADD QUANTITY SUCCESS");
-        return ResponseEntity.ok(new Result("SUCESS","OK",cartItemRepository.save(cartItem1)));
+        return ResponseEntity.ok(new Result("SUCESS", "OK", cartItemRepository.save(cartItem1)));
     }
 
     @Override
@@ -302,7 +306,7 @@ public class UserServiceImpl implements UserService {
         order.setCreated_date(new Date());
         order.setUser_payment_id(cartDTO.getUserPaymentId());
         order.setStatus_shipping("Đã đặt");
-        for(Long cartItemId: cartDTO.getCartItemList()){
+        for (Long cartItemId : cartDTO.getCartItemList()) {
             CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow();
             Product product = productRepository.findById(cartItem.getProduct_id()).orElseThrow();
             OrderItem orderItem = new OrderItem();
@@ -310,16 +314,16 @@ public class UserServiceImpl implements UserService {
             orderItem.setQuantity(cartItem.getQuantity());
             orderItem.setSub_total(cartItem.getQuantity() * product.getPrice());
             orderItem.setCreated_date(new Date());
-            if(product.getAmount() > cartItem.getQuantity()){
+            if (product.getAmount() > cartItem.getQuantity()) {
                 product.setAmount(product.getAmount() - cartItem.getQuantity());
                 productRepository.save(product);
             } else if (product.getAmount() == cartItem.getQuantity()) {
                 product.setAmount(0);
                 product.setStatus(false);
                 productRepository.save(product);
-            } else{
+            } else {
                 logger.error("NOT ENOUGH PRODUCT");
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH PRODUCT","CONFLICT", null));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH PRODUCT", "CONFLICT", null));
             }
             total_price += orderItem.getSub_total();
             orderItems.add(orderItem);
@@ -327,27 +331,39 @@ public class UserServiceImpl implements UserService {
         }
         //su dung coupon
         Coupon coupon = couponRepository.findById(cartDTO.getCouponId()).orElseThrow(null);
-        if (coupon == null){
+        if (coupon == null) {
             logger.error("NOT FOUND COUPON");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT FOUND COUPON","NOT_FOUND", null));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT FOUND COUPON", "NOT_FOUND", null));
         }
-        if(coupon.getMaxUsage()>1){
-            total_price = total_price - (total_price*coupon.getDiscountPercent())/100;
-            order.setTotal_price((double) Math.round(total_price));
+        if (coupon.getMaxUsage() > 1) {
             coupon.setMaxUsage(coupon.getMaxUsage() - 1);
         } else if (coupon.getMaxUsage() == 1) {
-            total_price = total_price - (total_price*coupon.getDiscountPercent())/100;
-            order.setTotal_price((double) Math.round(total_price));
             coupon.setMaxUsage(coupon.getMaxUsage() - 1);
             coupon.setStatus(false);
         } else {
             logger.error("NOT ENOUGH COUPON");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH COUPON","CONFLICT", null));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH COUPON", "CONFLICT", null));
+        }
+        if (total_price >= coupon.getCondition()) {
+            switch (coupon.getType()) {
+                case "PERCENT_ON_ORDER":
+                    int discountPercent = Double.valueOf(coupon.getDiscount()).intValue();
+                    total_price = (total_price * (100 - discountPercent)) / 100;
+                    order.setTotal_price((total_price));
+                    break;
+                case "DIRECT_ON_ORDER":
+                    total_price = total_price - coupon.getDiscount();
+                    order.setTotal_price((double) Math.round(total_price));
+                    break;
+            }
+        } else {
+            logger.error("NOT ENOUGH CONDITION");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new Result("NOT ENOUGH CONDITION", "CONFLICT", null));
         }
         couponRepository.save(coupon);
 
         orderRepository.save(order);
-        for(OrderItem orderItem: orderItems){
+        for (OrderItem orderItem : orderItems) {
             orderItem.setOrder_id(order.getId());
         }
         orderItemRepository.saveAll(orderItems);
@@ -366,6 +382,6 @@ public class UserServiceImpl implements UserService {
         emailService.sendMail(order, user);
 
         logger.info("ORDER SUCCESS");
-        return ResponseEntity.ok(new Result("ORDER SUCCESS","OK",orderDTO));
+        return ResponseEntity.ok(new Result("ORDER SUCCESS", "OK", orderDTO));
     }
 }

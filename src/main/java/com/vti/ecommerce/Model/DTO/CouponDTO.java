@@ -7,11 +7,29 @@ import java.util.Date;
 
 public class CouponDTO {
     private String code;
-    private int discountPercent;
+    private Double discount;
 //    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date expirationDate;
     private int maxUsage;
+    private String type;
+    private Double condition;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Double getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Double condition) {
+        this.condition = condition;
+    }
 
     public String getCode() {
         return code;
@@ -21,12 +39,12 @@ public class CouponDTO {
         this.code = code;
     }
 
-    public int getDiscountPercent() {
-        return discountPercent;
+    public Double getDiscount() {
+        return discount;
     }
 
-    public void setDiscountPercent(int discountPercent) {
-        this.discountPercent = discountPercent;
+    public void setDiscount(Double discount) {
+        this.discount = discount;
     }
 
     public Date getExpirationDate() {
