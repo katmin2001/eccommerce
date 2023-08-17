@@ -77,7 +77,7 @@ public class AdminController {
 //        return ResponseEntity.ok(productService.getAllProduct());
 //    }
     @GetMapping("/product/all")
-    public List<ProductDTO> getAllProduct(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Result> getAllProduct(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "8") int size){
         return productService.getAllProduct(page, size);
     }

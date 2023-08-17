@@ -15,6 +15,16 @@ public class ProductDTO {
     private Category category;
     private Date createdDate;
     private Date updateDate;
+    private Boolean status;
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
     private List<ProductImage> productImages;
 
     public Date getCreatedDate() {

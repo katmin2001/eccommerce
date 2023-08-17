@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
-    public List<ProductDTO> getAllProduct(int page, int size);
+    public ResponseEntity<Result> getAllProduct(int page, int size);
     public ResponseEntity<Result> getProductById(Long productId);
     public ResponseEntity<Result> addProduct(Product product, List<MultipartFile> files) throws IOException;
     public ResponseEntity<Result> updateProduct(Product product, List<MultipartFile> file, Long productId);

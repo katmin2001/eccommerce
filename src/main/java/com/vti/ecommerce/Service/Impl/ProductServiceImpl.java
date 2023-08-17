@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProduct(int page, int size) {
+    public ResponseEntity<Result> getAllProduct(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Product> products = productRepository.findAll(pageRequest);
         List<ProductDTO> productDTOS = new ArrayList<>();
@@ -61,9 +61,10 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setUpdateDate(product.getUpdate_date());
             productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
+            productDTO.setStatus(product.getStatus());
             productDTOS.add(productDTO);
         }
-        return productDTOS;
+        return ResponseEntity.ok(new Result("SUCCESS", "OK", productDTOS));
     }
 
     @Override
@@ -78,6 +79,7 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setDescription(product.getDescription());
             productDTO.setCreatedDate(product.getCreated_date());
             productDTO.setUpdateDate(product.getUpdate_date());
+            productDTO.setStatus(product.getStatus());
             productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
             logger.info("SUCCESS");
@@ -156,10 +158,11 @@ public class ProductServiceImpl implements ProductService {
                 productImageRepository.deleteAll(productImageList);
 
                 List<ProductImage> productImages = new ArrayList<>();
+                int dem = 1;
                 for (MultipartFile file : files) {
                     String fileName = file.getOriginalFilename();
                     String[] name = fileName.split("\\.");
-                    fileName = product1.getName() + "-" + productId + "." + name[1];
+                    fileName = product1.getName() + "-" + productId + "-" + dem + "." + name[1];
                     Path filePath = Paths.get(uploadDir, fileName);
                     Files.copy(file.getInputStream(), filePath);
 
@@ -169,7 +172,7 @@ public class ProductServiceImpl implements ProductService {
                     productImage.setUpdate_date(new Date());
                     productImage.setProduct_id(productId);
                     productImages.add(productImage);
-
+                    dem++;
                 }
                 productImageRepository.saveAll(productImages);
             }
@@ -223,6 +226,7 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setDescription(product.getDescription());
             productDTO.setCreatedDate(product.getCreated_date());
             productDTO.setUpdateDate(product.getUpdate_date());
+            productDTO.setStatus(product.getStatus());
             productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
             productDTOS.add(productDTO);
@@ -244,6 +248,7 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setDescription(product.getDescription());
             productDTO.setCreatedDate(product.getCreated_date());
             productDTO.setUpdateDate(product.getUpdate_date());
+            productDTO.setStatus(product.getStatus());
             productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
             productDTOS.add(productDTO);
@@ -265,6 +270,7 @@ public class ProductServiceImpl implements ProductService {
             productDTO.setDescription(product.getDescription());
             productDTO.setCreatedDate(product.getCreated_date());
             productDTO.setUpdateDate(product.getUpdate_date());
+            productDTO.setStatus(product.getStatus());
             productDTO.setCategory(categoryRepository.findById(product.getCategory_id()).orElseThrow());
             productDTO.setProductImages(productImageRepository.findProductsImagesByProductId(product.getId()));
             productDTOS.add(productDTO);

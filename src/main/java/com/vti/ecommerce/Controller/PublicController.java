@@ -15,6 +15,11 @@ public class PublicController {
     private CategoryService categoryService;
     @Autowired
     private ProductService productService;
+    @GetMapping("/home/product-list")
+    public ResponseEntity<Result> getAllProducts(@RequestParam(defaultValue = "0") int page,
+                                                 @RequestParam(defaultValue = "8") int size){
+        return productService.getAllProduct(page, size);
+    }
     @GetMapping("/home/category-list")
     public ResponseEntity<Result> getAllCategory(){
         return categoryService.getAllCategory();
